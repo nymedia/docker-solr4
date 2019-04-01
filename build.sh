@@ -100,8 +100,9 @@ function configure_jetty_home() {
 function install_deb_packages() {
     local package_specs="${@}"
 
-    apt-get update --option "Acquire::Retries=3" --quiet=2
+    apt-get update --option "Acquire::Check-Valid-Until=false" --option "Acquire::Retries=3" --quiet=2
     apt-get install \
+        --option "Acquire::Check-Valid-Until=false" \
         --option "Acquire::Retries=3" \
         --no-install-recommends \
         --assume-yes \
@@ -113,7 +114,8 @@ function install_deb_packages() {
 
 # ===== Main
 
-
+echo "deb http://archive.debian.org/debian jessie-backports main" > /etc/apt/sources.list.d/jessie-backports.list
+sed -i '/deb http:\/\/deb.debian.org\/debian jessie-updates main/d' /etc/apt/sources.list
 adduser --system "${SOLR_USER}"
 deploy_solr_distribution "$1"
 configure_solr_home
